@@ -5,7 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use App\Observers\CollectionItemObserver;
 
+#[ObservedBy(CollectionItemObserver::class)]
 class CollectionItem extends Model
 {
     use HasFactory;

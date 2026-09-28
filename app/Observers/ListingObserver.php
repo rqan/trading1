@@ -51,5 +51,11 @@ class ListingObserver
                 $u->notify(new TradeMatchNotification($casting, 'someone_wants_your_listing'));
             }
         }
+
+        // Apply micro adjustment: new for_trade listing -0.3%
+        if ($listing->type === 'for_trade') {
+            $service = app(\App\Services\MarketMultiplierService::class);
+            $service->applyMicroAdjustment($castingId, 'listing_added');
+        }
     }
 }

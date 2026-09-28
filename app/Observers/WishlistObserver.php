@@ -24,5 +24,9 @@ class WishlistObserver
             $casting = Casting::find($wishlist->casting_id);
             $wishlist->user->notify(new TradeMatchNotification($casting, 'someone_has_your_wishlist'));
         }
+
+        // Apply micro adjustment: wishlist added +0.5%
+        $service = app(\App\Services\MarketMultiplierService::class);
+        $service->applyMicroAdjustment($wishlist->casting_id, 'wishlist_added');
     }
 }

@@ -45,9 +45,18 @@
                     
                     @php
                         $castingData = $listing->type == 'for_trade' && $listing->collectionItem ? $listing->collectionItem->casting : $listing->casting;
+                        $signal = \App\Models\MarketSignal::where('casting_id', $castingData?->id)->first();
+                        $badge = '';
+                        if ($signal) {
+                            if ($signal->current_multiplier > 1.1 && $signal->target_multiplier >= $signal->current_multiplier) {
+                                $badge = '<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">🔥 Trending</span>';
+                            } elseif ($signal->current_multiplier < 0.9 && $signal->target_multiplier <= $signal->current_multiplier) {
+                                $badge = '<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">❄️ Cooling</span>';
+                            }
+                        }
                     @endphp
                     
-                    <h3 class="font-bold text-lg">{{ $castingData?->name ?? 'Unknown' }} ({{ $castingData?->year ?? '-' }})</h3>
+                    <h3 class="font-bold text-lg">{{ $castingData?->name ?? 'Unknown' }} ({{ $castingData?->year ?? '-' }}) {!! $badge !!}</h3>
                     <p class="text-sm text-gray-600">By: {{ $listing->user->name }}</p>
                     
                     @if($listing->type == 'for_trade' && $listing->collectionItem)
