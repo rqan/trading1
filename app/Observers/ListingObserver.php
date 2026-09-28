@@ -55,7 +55,7 @@ class ListingObserver
         // Apply micro adjustment: new for_trade listing -0.3%
         if ($listing->type === 'for_trade') {
             $service = app(\App\Services\MarketMultiplierService::class);
-            $service->applyMicroAdjustment($castingId, 'listing_added');
+            $service->applyMicroAdjustment($castingId, 'listing_added', $listing->user);
         }
     }
 }

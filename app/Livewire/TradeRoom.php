@@ -132,7 +132,7 @@ class TradeRoom extends Component
         // Micro-adjustment for Market
         $service = app(\App\Services\MarketMultiplierService::class);
         foreach ($this->trade->items as $tradeItem) {
-            $service->applyMicroAdjustment($tradeItem->collectionItem->casting_id, 'trade_completed');
+            $service->applyMicroAdjustment($tradeItem->collectionItem->casting_id, 'trade_completed', $this->trade->initiator); // both are completing it, we just pass one to validate trust score
         }
 
         TradeUpdated::dispatch($this->trade->id);

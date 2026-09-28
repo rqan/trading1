@@ -81,6 +81,17 @@ class MarketMultiplierService
             // new = current + (target - current) * 0.2
             $new = $current + (($target - $current) * 0.2);
             
+            // Anomaly Detection: Capping daily movement max 10%
+            $startOfDayMultiplier = MarketMultiplierHistory::where('casting_id', $signal->casting_id)
+                ->where('recorded_at', '>=', $now->copy()->startOfDay())
+                ->orderBy('recorded_at', 'asc')
+                ->value('multiplier') ?? $current;
+
+            $maxAllowed = $startOfDayMultiplier * 1.10;
+            $minAllowed = $startOfDayMultiplier * 0.90;
+
+            $new = max($minAllowed, min($maxAllowed, $new));
+            
             // Re-clamp just in case
             $new = max(0.5, min(3.0, $new));
 
@@ -97,8 +108,18 @@ class MarketMultiplierService
         }
     }
 
-    public function applyMicroAdjustment(int $castingId, string $event)
+    public function applyMicroAdjustment(int $castingId, string $event, \App\Models\User $user = null)
     {
+        // Anomaly Detection: Ignore signals from users < 7 days old or trust score < 60
+        if ($user) {
+            if ($user->created_at && $user->created_at->diffInDays(now()) < 7) {
+                return;
+            }
+            if ($user->trust_score < 60) {
+                return;
+            }
+        }
+
         $signal = MarketSignal::firstOrCreate(
             ['casting_id' => $castingId],
             ['current_multiplier' => 1.0, 'target_multiplier' => 1.0]

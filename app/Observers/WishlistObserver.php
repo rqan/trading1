@@ -27,6 +27,6 @@ class WishlistObserver
 
         // Apply micro adjustment: wishlist added +0.5%
         $service = app(\App\Services\MarketMultiplierService::class);
-        $service->applyMicroAdjustment($wishlist->casting_id, 'wishlist_added');
+        $service->applyMicroAdjustment($wishlist->casting_id, 'wishlist_added', $wishlist->user);
     }
 }
