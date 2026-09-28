@@ -64,6 +64,9 @@
                             <p><span class="font-semibold">Condition:</span> {{ $listing->collectionItem->condition }}</p>
                             <p><span class="font-semibold">Card:</span> {{ $listing->collectionItem->card_condition ?? '-' }}</p>
                         </div>
+                        @if($listing->user_id !== auth()->id())
+                            @livewire('trade-proposal', ['listingId' => $listing->id], key('proposal-'.$listing->id))
+                        @endif
                     @endif
                     
                     @if($listing->notes)
