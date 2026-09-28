@@ -58,6 +58,29 @@ class CollectionManager extends Component
         session()->flash('message', 'Item added to collection.');
     }
 
+    public function postForTrade($itemId)
+    {
+        $item = CollectionItem::where('id', $itemId)->where('user_id', Auth::id())->first();
+        if (!$item) return;
+
+        $exists = \App\Models\Listing::where('collection_item_id', $itemId)
+            ->where('type', 'for_trade')
+            ->where('status', 'active')
+            ->exists();
+
+        if (!$exists) {
+            \App\Models\Listing::create([
+                'user_id' => Auth::id(),
+                'collection_item_id' => $itemId,
+                'type' => 'for_trade',
+            ]);
+            $item->update(['status' => 'for_trade']);
+            session()->flash('message', 'Item listed For Trade.');
+        } else {
+            session()->flash('error', 'This item is already listed For Trade.');
+        }
+    }
+
     public function deleteItem($id)
     {
         CollectionItem::where('id', $id)->where('user_id', Auth::id())->delete();

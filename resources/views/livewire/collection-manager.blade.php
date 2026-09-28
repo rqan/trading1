@@ -20,7 +20,10 @@
                     <p><span class="font-semibold">Card:</span> {{ $item->card_condition ?? '-' }}</p>
                     <p><span class="font-semibold">Status:</span> {{ ucfirst($item->status) }}</p>
                 </div>
-                <div class="mt-4 flex justify-end">
+                <div class="mt-4 flex justify-end gap-2">
+                    @if($item->status !== 'for_trade')
+                        <button wire:click="postForTrade({{ $item->id }})" class="text-blue-600 hover:text-blue-800 text-sm">Post For Trade</button>
+                    @endif
                     <button wire:click="deleteItem({{ $item->id }})" class="text-red-600 hover:text-red-800 text-sm">Remove</button>
                 </div>
             </div>
