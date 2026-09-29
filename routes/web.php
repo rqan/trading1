@@ -12,6 +12,10 @@ Route::get('listings', \App\Livewire\ListingBrowser::class)
     ->middleware(['auth', 'verified'])
     ->name('listings');
 
+Route::get('community', \App\Livewire\CommunityFeed::class)
+    ->middleware(['auth', 'verified'])
+    ->name('community.feed');
+
 Route::get('trades/{trade}', \App\Livewire\TradeRoom::class)
     ->middleware(['auth', 'verified'])
     ->name('trade.room');

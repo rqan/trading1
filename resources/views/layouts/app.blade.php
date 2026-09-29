@@ -5,6 +5,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
+        <meta name="description" content="Hot Wheels WFLF Trading Community - Win Fair Lose Fair based real-time trading platform for collectors.">
+        <meta name="keywords" content="hot wheels, trading, diecast, WFLF, collector">
+        <meta property="og:title" content="{{ config('app.name', 'Laravel') }}">
+        <meta property="og:description" content="Hot Wheels WFLF Trading Community">
+        
         <title>{{ config('app.name', 'Laravel') }}</title>
 
         <!-- Fonts -->

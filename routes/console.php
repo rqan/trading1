@@ -9,3 +9,4 @@ Artisan::command('inspire', function () {
 
 use Illuminate\Support\Facades\Schedule;
 Schedule::command('market:calculate-multipliers')->hourly();
+Schedule::command('app:backup-database')->daily();
