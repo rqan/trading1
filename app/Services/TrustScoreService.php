@@ -10,14 +10,12 @@ class TrustScoreService
 {
     public function recalculate(User $user): void
     {
-        $baseScore = 50; // Starting score
+        $baseScore = config('wflf.trust_score.base', 50);
 
-        // Profile completeness (simple check: name, email)
         if ($user->name && $user->email) {
-            $baseScore += 10;
+            $baseScore += config('wflf.trust_score.profile_bonus', 10);
         }
 
-        // Trade ratio
         $completedTrades = Trade::where(function($q) use ($user) {
             $q->where('initiator_id', $user->id)->orWhere('receiver_id', $user->id);
         })->where('status', 'completed')->count();
@@ -26,8 +24,8 @@ class TrustScoreService
             $q->where('initiator_id', $user->id)->orWhere('receiver_id', $user->id);
         })->where('status', 'cancelled')->count();
 
-        $baseScore += ($completedTrades * 2);
-        $baseScore -= ($cancelledTrades * 5); // penalty for cancellations
+        $baseScore += ($completedTrades * config('wflf.trust_score.trade_bonus', 2));
+        $baseScore -= ($cancelledTrades * config('wflf.trust_score.cancel_penalty', 5));
 
         // Ratings
         $avgRating = Rating::where('reviewee_id', $user->id)->avg('score') ?? 0;
