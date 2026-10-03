@@ -21,10 +21,22 @@
                     <p><span class="font-semibold">Status:</span> {{ ucfirst($item->status) }}</p>
                 </div>
                 <div class="mt-4 flex justify-end gap-2">
-                    @if($item->status !== 'for_trade')
+                    @if($item->status === 'available')
                         <button wire:click="postForTrade({{ $item->id }})" class="text-blue-600 hover:text-blue-800 text-sm">Post For Trade</button>
                     @endif
-                    <button wire:click="deleteItem({{ $item->id }})" class="text-red-600 hover:text-red-800 text-sm">Remove</button>
+
+                    @if(in_array($item->status, ['for_trade', 'traded']))
+                        <span class="text-xs px-2 py-1 rounded-full {{ $item->status === 'traded' ? 'bg-gray-100 text-gray-500' : 'bg-yellow-100 text-yellow-700' }}">
+                            {{ $item->status === 'traded' ? '🔒 Sudah Ditrade' : '📋 Sedang Dilisting' }}
+                        </span>
+                    @else
+                        <button
+                            wire:click="deleteItem({{ $item->id }})"
+                            wire:confirm="Yakin ingin menghapus item ini dari koleksi?"
+                            class="text-red-600 hover:text-red-800 text-sm">
+                            Remove
+                        </button>
+                    @endif
                 </div>
             </div>
         @empty
@@ -53,11 +65,19 @@
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700">Condition</label>
                         <select wire:model="condition" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                            <option value="Sealed/MOC">Sealed / MOC</option>
-                            <option value="Mint Loose">Mint Loose</option>
-                            <option value="Good">Good</option>
-                            <option value="Played">Played</option>
-                            <option value="Damaged">Damaged</option>
+                            <option value="Graded">1. Graded (AFA, dll.)</option>
+                            <option value="MOC Mint + Protector">2. MOC Mint + Protector</option>
+                            <option value="MOC Mint">3. MOC Mint</option>
+                            <option value="MOC Near Mint">4. MOC Near Mint</option>
+                            <option value="MOC Good / Excellent">5. MOC Good / Excellent</option>
+                            <option value="MOC Fair / Rusak">6. MOC Fair / Rusak</option>
+                            <option value="Loose Mint">7. Loose Mint</option>
+                            <option value="Loose Near Mint">8. Loose Near Mint</option>
+                            <option value="Loose Excellent">9. Loose Excellent</option>
+                            <option value="Played-with">10. Played-with (Bekas Main)</option>
+                            <option value="Poor / Damaged">11. Poor / Damaged</option>
+                            <option value="Restored">12. Restored (Restorasi)</option>
+                            <option value="Custom">13. Custom / Bahan Custom</option>
                         </select>
                         @error('condition') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>

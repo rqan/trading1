@@ -31,11 +31,38 @@
             
             @if($trade->status === 'proposed')
                 <div class="mt-4 border-t pt-4">
-                    <button wire:click="acceptTrade" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50" @if(!$fairness['is_fair']) disabled @endif>
-                        Accept Trade
-                    </button>
+                    {{-- Indikator persetujuan dual-consensus --}}
+                    <div class="flex items-center gap-4 mb-3 text-sm">
+                        <span class="flex items-center gap-1 {{ $trade->accepted_initiator ? 'text-green-600 font-semibold' : 'text-gray-400' }}">
+                            @if($trade->accepted_initiator) ✅ @else ⏳ @endif
+                            {{ $trade->initiator->name }} {{ $trade->accepted_initiator ? 'Setuju' : 'Belum Setuju' }}
+                        </span>
+                        <span class="flex items-center gap-1 {{ $trade->accepted_receiver ? 'text-green-600 font-semibold' : 'text-gray-400' }}">
+                            @if($trade->accepted_receiver) ✅ @else ⏳ @endif
+                            {{ $trade->receiver->name }} {{ $trade->accepted_receiver ? 'Setuju' : 'Belum Setuju' }}
+                        </span>
+                    </div>
+
+                    @php
+                        $myAccepted = auth()->id() === $trade->initiator_id
+                            ? $trade->accepted_initiator
+                            : $trade->accepted_receiver;
+                    @endphp
+
+                    @if(!$myAccepted)
+                        <button wire:click="acceptTrade"
+                            class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                            @if(!$fairness['is_fair']) disabled @endif>
+                            Saya Setuju / Accept Trade
+                        </button>
+                    @else
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                            ✅ Anda sudah menyetujui. Menunggu pihak lain...
+                        </span>
+                    @endif
+
                     @if(session()->has('error'))
-                        <span class="text-red-500 text-sm ml-2">{{ session('error') }}</span>
+                        <p class="text-red-500 text-sm mt-2">{{ session('error') }}</p>
                     @endif
                 </div>
             @endif

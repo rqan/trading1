@@ -56,8 +56,23 @@
                         }
                     @endphp
                     
-                    <h3 class="font-bold text-lg">{{ $castingData?->name ?? 'Unknown' }} ({{ $castingData?->year ?? '-' }}) {!! $badge !!}</h3>
-                    <p class="text-sm text-gray-600">By: {{ $listing->user->name }}</p>
+                    <h3 class="font-bold text-lg">
+                        @if($castingData?->slug)
+                            <a href="{{ route('casting.detail', $castingData) }}"
+                               class="hover:text-orange-600 transition-colors">
+                                {{ $castingData->name }} ({{ $castingData->year ?? '-' }})
+                            </a>
+                        @else
+                            {{ $castingData?->name ?? 'Unknown' }} ({{ $castingData?->year ?? '-' }})
+                        @endif
+                        {!! $badge !!}
+                    </h3>
+                    <p class="text-sm text-gray-600">By:
+                        <a href="{{ route('user.profile', $listing->user->id) }}"
+                           class="text-orange-600 hover:underline font-medium">
+                            {{ $listing->user->name }}
+                        </a>
+                    </p>
                     
                     @if($listing->type == 'for_trade' && $listing->collectionItem)
                         <div class="mt-2 text-sm bg-gray-50 p-2 rounded">
