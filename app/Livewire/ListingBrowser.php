@@ -5,10 +5,11 @@ namespace App\Livewire;
 use App\Models\Listing;
 use Livewire\Component;
 use Livewire\WithPagination;
-
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 
 #[Layout('layouts.app')]
+#[Title('Market – Jelajahi Listing')]
 class ListingBrowser extends Component
 {
     use WithPagination;

@@ -16,11 +16,17 @@ class Post extends Model
         'content',
         'image',
         'collection_item_id',
+        'club_id',
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function club(): BelongsTo
+    {
+        return $this->belongsTo(Club::class);
     }
 
     public function collectionItem(): BelongsTo

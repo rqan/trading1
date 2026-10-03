@@ -31,6 +31,14 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('trust_score')
                     ->numeric()
                     ->default(100),
+                Forms\Components\Select::make('platform_role')
+                    ->options([
+                        'superadmin' => 'Superadmin',
+                        'moderator' => 'Moderator',
+                        'member' => 'Member',
+                    ])
+                    ->required()
+                    ->default('member'),
                 Forms\Components\Toggle::make('is_banned')
                     ->required(),
             ]);
@@ -44,6 +52,12 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
+                Tables\Columns\BadgeColumn::make('platform_role')
+                    ->colors([
+                        'danger' => 'superadmin',
+                        'warning' => 'moderator',
+                        'success' => 'member',
+                    ]),
                 Tables\Columns\TextColumn::make('trust_score')
                     ->numeric()
                     ->sortable()

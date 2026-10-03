@@ -14,7 +14,7 @@ class CollectionManager extends Component
 
     public $castings = [];
     public $selectedCasting = null;
-    public $condition = 'Sealed/MOC';
+    public $condition = 'Graded';
     public $cardCondition = 'Mint';
     public $photos = [];
     public $status = 'available';
@@ -51,7 +51,7 @@ class CollectionManager extends Component
         ]);
 
         $this->reset(['selectedCasting', 'condition', 'cardCondition', 'photos', 'status', 'showAddModal']);
-        $this->condition = 'Sealed/MOC';
+        $this->condition = 'Graded';
         $this->cardCondition = 'Mint';
         $this->status = 'available';
 
@@ -83,7 +83,29 @@ class CollectionManager extends Component
 
     public function deleteItem($id)
     {
-        CollectionItem::where('id', $id)->where('user_id', Auth::id())->delete();
+        $item = CollectionItem::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if (!$item) return;
+
+        // Blokir: item yang sedang di-listing sebagai "for_trade" tidak boleh dihapus langsung
+        if (in_array($item->status, ['for_trade', 'traded'])) {
+            session()->flash('error', 'Item tidak dapat dihapus karena sedang aktif di pasar atau sudah selesai ditrade. Batalkan listing-nya terlebih dahulu.');
+            return;
+        }
+
+        // Blokir: item yang sedang terkait dalam trade yang belum selesai tidak boleh dihapus
+        $inActiveTrade = \App\Models\TradeItem::whereHas('trade', function ($q) {
+            $q->whereNotIn('status', ['completed', 'cancelled']);
+        })->where('collection_item_id', $id)->exists();
+
+        if ($inActiveTrade) {
+            session()->flash('error', 'Item tidak dapat dihapus karena sedang terkait dalam transaksi yang aktif.');
+            return;
+        }
+
+        $item->delete();
     }
 
     public function render()
