@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="antialiased">
 <head>
+    <!-- SEO: Google Search Console Verification -->
+    <meta name="google-site-verification" content="YOUR_GOOGLE_SITE_VERIFICATION_CODE" />
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
 
@@ -48,6 +51,32 @@
 
     {{-- Slot untuk style tambahan per-halaman (misal: Leaflet CSS di halaman jurnal) --}}
     @stack('styles')
+    
+    {{-- SEO: JSON-LD Schema --}}
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@@graph": [
+        {
+          "@@type": "WebSite",
+          "@@id": "{{ url('/') }}#website",
+          "url": "{{ url('/') }}",
+          "name": "DCastTrade",
+          "description": "Platform komunitas dan pertukaran diecast / Hot Wheels terpercaya di Indonesia.",
+          "publisher": {
+            "@@id": "{{ url('/') }}#organization"
+          }
+        },
+        {
+          "@@type": "Organization",
+          "@@id": "{{ url('/') }}#organization",
+          "name": "DCastTrade",
+          "url": "{{ url('/') }}",
+          "logo": "{{ asset('logo.png') }}"
+        }
+      ]
+    }
+    </script>
 </head>
 <body class="bg-slate-50 text-slate-900 overflow-x-hidden">
     
@@ -87,10 +116,10 @@
                           {{ str_starts_with($cur,'listings') ? 'text-orange-600 border-b-2 border-orange-600' : 'text-slate-600 hover:text-orange-600' }}">
                     Market
                 </a>
-                <a href="{{ route('club.feed') }}"
+                <a href="{{ route('clubs.index') }}"
                    class="min-h-[44px] px-3 py-2 text-sm font-medium transition-colors
-                          {{ str_starts_with($cur,'community') ? 'text-orange-600 border-b-2 border-orange-600' : 'text-slate-600 hover:text-orange-600' }}">
-                    Club
+                          {{ str_starts_with($cur,'clubs') || str_starts_with($cur,'community') ? 'text-orange-600 border-b-2 border-orange-600' : 'text-slate-600 hover:text-orange-600' }}">
+                    Clubs
                 </a>
                 <a href="{{ route('my.trades') }}"
                    class="min-h-[44px] px-3 py-2 text-sm font-medium transition-colors
@@ -136,6 +165,23 @@
                        class="block px-4 py-2 text-slate-700 hover:bg-orange-50 hover:text-orange-600">
                         Koleksi
                     </a>
+                    <a href="{{ route('my.listings') }}"
+                       class="block px-4 py-2 text-slate-700 hover:bg-orange-50 hover:text-orange-600">
+                        My Listings
+                    </a>
+                    <a href="{{ route('my.trades') }}"
+                       class="block px-4 py-2 text-slate-700 hover:bg-orange-50 hover:text-orange-600">
+                        My Trades
+                    </a>
+                    <a href="{{ route('my.journals') }}"
+                       class="block px-4 py-2 text-slate-700 hover:bg-orange-50 hover:text-orange-600">
+                        📔 Jurnal Saya
+                    </a>
+                    <a href="{{ route('dashboard') }}?tab=wishlist"
+                       class="block px-4 py-2 text-slate-700 hover:bg-orange-50 hover:text-orange-600">
+                        ❤️ My Wishlist
+                    </a>
+                    <hr class="my-1 border-slate-100">
                     <a href="{{ route('profile') }}"
                        class="block px-4 py-2 text-slate-700 hover:bg-orange-50 hover:text-orange-600">
                         Pengaturan
@@ -160,11 +206,15 @@
                 </button>
                 <div x-show="mobileOpen" x-transition
                      class="absolute top-14 left-0 right-0 bg-white border-b border-slate-200 shadow-md py-2 z-50">
+                    <a href="{{ route('values') }}" class="block px-5 py-3 text-sm font-medium text-slate-700 hover:bg-orange-50">Values</a>
                     <a href="{{ route('listings') }}" class="block px-5 py-3 text-sm font-medium text-slate-700 hover:bg-orange-50">Market</a>
-                    <a href="{{ route('club.feed') }}" class="block px-5 py-3 text-sm font-medium text-slate-700 hover:bg-orange-50">Club</a>
+                    <a href="{{ route('clubs.index') }}" class="block px-5 py-3 text-sm font-medium text-slate-700 hover:bg-orange-50">Clubs</a>
                     <a href="{{ route('my.trades') }}" class="block px-5 py-3 text-sm font-medium text-slate-700 hover:bg-orange-50">My Trades</a>
                     <a href="{{ route('my.listings') }}" class="block px-5 py-3 text-sm font-medium text-slate-700 hover:bg-orange-50">My Listings</a>
+                    <a href="{{ route('my.journals') }}" class="block px-5 py-3 text-sm font-medium text-slate-700 hover:bg-orange-50">📔 Jurnal</a>
+                    <a href="{{ route('dashboard') }}?tab=wishlist" class="block px-5 py-3 text-sm font-medium text-slate-700 hover:bg-orange-50">❤️ Wishlist</a>
                     <hr class="my-1 border-slate-100">
+                    <a href="{{ route('user.profile', auth()->id()) }}" class="block px-5 py-3 text-sm text-slate-700 hover:bg-orange-50">Profil Saya</a>
                     <a href="{{ route('profile') }}" class="block px-5 py-3 text-sm text-slate-700 hover:bg-orange-50">Pengaturan</a>
                     <form method="POST" action="{{ route('logout') }}" class="px-5 py-2">
                         @csrf
@@ -202,7 +252,7 @@
                     <ul class="space-y-2 text-sm">
                         <li><a href="{{ route('values') }}" class="text-slate-600 hover:text-orange-600">Values</a></li>
                         <li><a href="{{ route('listings') }}" class="text-slate-600 hover:text-orange-600">Market</a></li>
-                        <li><a href="{{ route('club.feed') }}" class="text-slate-600 hover:text-orange-600">Club</a></li>
+                        <li><a href="{{ route('clubs.index') }}" class="text-slate-600 hover:text-orange-600">Clubs</a></li>
                         <li><a href="{{ route('my.trades') }}" class="text-slate-600 hover:text-orange-600">My Trades</a></li>
                         <li><a href="{{ route('my.listings') }}" class="text-slate-600 hover:text-orange-600">My Listings</a></li>
                         <li><a href="{{ route('notifications') }}" class="text-slate-600 hover:text-orange-600">Notifikasi</a></li>

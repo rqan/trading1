@@ -5,7 +5,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <!-- SEO: Google Search Console Verification -->
+        <meta name="google-site-verification" content="YOUR_GOOGLE_SITE_VERIFICATION_CODE" />
+
+        <title>{{ config('app.name', 'DCastTrade') }} - Autentikasi</title>
+        <meta name="description" content="Masuk atau daftar ke DCastTrade, platform pertukaran diecast / Hot Wheels.">
+        
+        <link rel="canonical" href="{{ url()->current() }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

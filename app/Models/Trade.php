@@ -20,7 +20,7 @@ class Trade extends Model
         'party_b_confirmed_at',
         'completion_method',
         'trade_status',
-        
+
         // Legacy fields for backward compatibility
         'initiator_id',
         'receiver_id',
@@ -57,7 +57,7 @@ class Trade extends Model
     {
         return $this->belongsTo(User::class, 'party_b_id');
     }
-    
+
     // Legacy relations
     public function initiator(): BelongsTo
     {
@@ -72,5 +72,10 @@ class Trade extends Model
     public function messages(): HasMany
     {
         return $this->hasMany(TradeMessage::class);
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(TradeItem::class);
     }
 }

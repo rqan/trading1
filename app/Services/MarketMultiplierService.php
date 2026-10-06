@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Models\Casting;
-use App\Models\MarketSignal;
+use App\Models\Listing;
 use App\Models\MarketMultiplierHistory;
-use Illuminate\Support\Facades\Log;
+use App\Models\MarketSignal;
+use App\Models\User;
+use App\Models\Wishlist;
 
 class MarketMultiplierService
 {
@@ -37,21 +39,13 @@ class MarketMultiplierService
             );
 
             // Fetch actual counts
-            $wishlists = \App\Models\Wishlist::where('casting_id', $casting->id)->count();
-            $listings = \App\Models\Listing::where('casting_id', $casting->id)
-                ->where('type', 'for_trade')
-                ->where('status', 'active')
-                ->count();
-
-            // Including collection items listed for trade where casting is inferred
-            $collectionListings = \App\Models\Listing::where('type', 'for_trade')
-                ->where('status', 'active')
-                ->whereHas('collectionItem', function($q) use ($casting) {
+            $wishlists = Wishlist::where('casting_id', $casting->id)->count();
+            // Count active listings offering this casting
+            $totalActiveListings = Listing::where('status', 'active')
+                ->whereHas('offeredItems', function ($q) use ($casting) {
                     $q->where('casting_id', $casting->id);
                 })
                 ->count();
-
-            $totalActiveListings = $listings + $collectionListings;
 
             $signal->wishlist_count = $wishlists;
             $signal->active_listing_count = $totalActiveListings;
@@ -63,7 +57,7 @@ class MarketMultiplierService
 
             // Clamp between 0.5 and 3.0
             $target = max(0.5, min(3.0, $rawMultiplier));
-            
+
             $signal->target_multiplier = $target;
             $signal->save();
         }
@@ -81,7 +75,7 @@ class MarketMultiplierService
             $target = (float) $signal->target_multiplier;
 
             $new = $current + (($target - $current) * $smoothingFactor);
-            
+
             $startOfDayMultiplier = MarketMultiplierHistory::where('casting_id', $signal->casting_id)
                 ->where('recorded_at', '>=', $now->copy()->startOfDay())
                 ->orderBy('recorded_at', 'asc')
@@ -91,7 +85,7 @@ class MarketMultiplierService
             $minAllowed = $startOfDayMultiplier * (1 - $dailyCap);
 
             $new = max($minAllowed, min($maxAllowed, $new));
-            
+
             $new = max(config('wflf.multipliers.min', 0.5), min(config('wflf.multipliers.max', 3.0), $new));
 
             $signal->current_multiplier = $new;
@@ -106,7 +100,7 @@ class MarketMultiplierService
         }
     }
 
-    public function applyMicroAdjustment(int $castingId, string $event, \App\Models\User $user = null)
+    public function applyMicroAdjustment(int $castingId, string $event, ?User $user = null)
     {
         if ($user) {
             if ($user->created_at && $user->created_at->diffInDays(now()) < 7) {

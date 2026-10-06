@@ -9,6 +9,11 @@ Route::view('tentang', 'pages.tentang')->name('tentang');
 
 // Halaman Values — publik, SEO-friendly
 Route::get('values', \App\Livewire\ValuesList::class)->name('values');
+Route::get('casting/{id}', function ($id) {
+    $casting = \App\Models\Casting::findOrFail($id);
+    return redirect()->route('casting.detail', $casting->slug, 301);
+})->where('id', '[0-9]+');
+
 Route::get('casting/{casting:slug}', \App\Livewire\CastingDetail::class)->name('casting.detail');
 
 Route::view('dashboard', 'dashboard')
@@ -25,6 +30,11 @@ Route::get('club', \App\Livewire\ClubFeed::class)
 
 Route::get('clubs', \App\Livewire\ClubList::class)
     ->name('clubs.index');
+
+Route::get('clubs/{id}', function ($id) {
+    $club = \App\Models\Club::findOrFail($id);
+    return redirect()->route('clubs.show', $club->slug, 301);
+})->where('id', '[0-9]+');
 
 Route::get('clubs/{club:slug}', \App\Livewire\ClubDetail::class)
     ->name('clubs.show');
@@ -66,3 +76,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 require __DIR__.'/auth.php';
+Route::get('sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index']);
+
+Route::get('photos/{path}', function ($path) {
+    if (!\Illuminate\Support\Facades\Storage::exists('journal-photos/' . $path)) abort(404);
+    // Ideally check if user can view photo, but for now just serve it securely outside public root
+    return \Illuminate\Support\Facades\Storage::response('journal-photos/' . $path);
+})->name('photos.show')->middleware('auth');

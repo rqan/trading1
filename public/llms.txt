@@ -1,0 +1,9 @@
+Title: DCastTrade
+Description: Platform komunitas dan pertukaran diecast / Hot Wheels terpercaya di Indonesia.
+URLs:
+- https://domainmu.com/ (Home)
+- https://domainmu.com/values (Values / Daftar Nilai Casting)
+- https://domainmu.com/clubs (Komunitas Club)
+- https://domainmu.com/aturan (Aturan Komunitas)
+- https://domainmu.com/privasi (Kebijakan Privasi)
+- https://domainmu.com/tentang (Tentang Kami)

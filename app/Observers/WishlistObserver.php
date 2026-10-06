@@ -2,20 +2,20 @@
 
 namespace App\Observers;
 
-use App\Models\Wishlist;
-use App\Models\Listing;
 use App\Models\Casting;
+use App\Models\Listing;
+use App\Models\Wishlist;
 use App\Notifications\TradeMatchNotification;
+use App\Services\MarketMultiplierService;
 
 class WishlistObserver
 {
     public function created(Wishlist $wishlist): void
     {
         // Check if there are active for_trade listings for this casting
-        $hasForTrade = Listing::where('type', 'for_trade')
-            ->where('status', 'active')
+        $hasForTrade = Listing::where('status', 'active')
             ->where('user_id', '!=', $wishlist->user_id)
-            ->whereHas('collectionItem', function($q) use ($wishlist) {
+            ->whereHas('offeredItems', function ($q) use ($wishlist) {
                 $q->where('casting_id', $wishlist->casting_id);
             })
             ->exists();
@@ -26,7 +26,7 @@ class WishlistObserver
         }
 
         // Apply micro adjustment: wishlist added +0.5%
-        $service = app(\App\Services\MarketMultiplierService::class);
+        $service = app(MarketMultiplierService::class);
         $service->applyMicroAdjustment($wishlist->casting_id, 'wishlist_added', $wishlist->user);
     }
 }

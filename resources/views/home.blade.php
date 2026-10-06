@@ -47,7 +47,7 @@
                         <span class="font-bold text-orange-600 text-sm">Est. Rp 150k</span>
                         {{-- Tombol Aksi --}}
                         @auth
-                            <a href="/trade/{{ $i }}" class="min-h-[44px] min-w-[44px] flex items-center justify-center bg-slate-900 text-white rounded-lg px-3 text-xs font-medium hover:bg-slate-800 transition-colors">
+                            <a href="{{ route('trade.room', $i) }}" class="min-h-[44px] min-w-[44px] flex items-center justify-center bg-slate-900 text-white rounded-lg px-3 text-xs font-medium hover:bg-slate-800 transition-colors">
                                 Trade
                             </a>
                         @else

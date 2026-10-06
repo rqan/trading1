@@ -37,14 +37,10 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             @forelse($listings as $listing)
                 <div class="bg-white p-4 shadow rounded-lg border border-gray-200">
-                    <div class="mb-2">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $listing->type == 'for_trade' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
-                            {{ $listing->type == 'for_trade' ? 'For Trade' : 'Looking For' }}
-                        </span>
-                    </div>
-                    
                     @php
-                        $castingData = $listing->type == 'for_trade' && $listing->collectionItem ? $listing->collectionItem->casting : $listing->casting;
+                        $isTrade = $listing->offeredItems->isNotEmpty();
+                        $primaryItem = $isTrade ? $listing->offeredItems->first() : $listing->requestedItems->first();
+                        $castingData = $primaryItem?->casting;
                         $signal = \App\Models\MarketSignal::where('casting_id', $castingData?->id)->first();
                         $badge = '';
                         if ($signal) {
@@ -56,6 +52,12 @@
                         }
                     @endphp
                     
+                    <div class="mb-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $isTrade ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
+                            {{ $isTrade ? 'For Trade' : 'Looking For' }}
+                        </span>
+                    </div>
+
                     <h3 class="font-bold text-lg">
                         @if($castingData?->slug)
                             <a href="{{ route('casting.detail', $castingData) }}"
@@ -63,7 +65,7 @@
                                 {{ $castingData->name }} ({{ $castingData->year ?? '-' }})
                             </a>
                         @else
-                            {{ $castingData?->name ?? 'Unknown' }} ({{ $castingData?->year ?? '-' }})
+                            {{ $castingData?->name ?? $listing->title ?? 'Unknown' }} ({{ $castingData?->year ?? '-' }})
                         @endif
                         {!! $badge !!}
                     </h3>
@@ -74,10 +76,12 @@
                         </a>
                     </p>
                     
-                    @if($listing->type == 'for_trade' && $listing->collectionItem)
+                    @if($isTrade && $primaryItem)
                         <div class="mt-2 text-sm bg-gray-50 p-2 rounded">
-                            <p><span class="font-semibold">Condition:</span> {{ $listing->collectionItem->condition }}</p>
-                            <p><span class="font-semibold">Card:</span> {{ $listing->collectionItem->card_condition ?? '-' }}</p>
+                            <p><span class="font-semibold">Condition:</span> {{ $primaryItem->condition ?? 'Unknown' }}</p>
+                            @if($primaryItem->condition_notes)
+                                <p><span class="font-semibold">Notes:</span> {{ $primaryItem->condition_notes }}</p>
+                            @endif
                         </div>
                         @if($listing->user_id !== auth()->id())
                             @livewire('trade-proposal', ['listingId' => $listing->id], key('proposal-'.$listing->id))

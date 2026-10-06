@@ -240,4 +240,28 @@
 @push('scripts')
     {{-- Chart.js dimuat hanya di halaman ini via jsDelivr (tidak perlu npm install) --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+    
+    {{-- SEO: Product Schema --}}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": "{{ $casting->name }}",
+      "image": [
+        "{{ $casting->image_url ? url($casting->image_url) : asset('logo.png') }}"
+       ],
+      "description": "Informasi harga pasaran untuk diecast {{ $casting->name }} seri {{ $casting->series }} tahun {{ $casting->year }}",
+      "brand": {
+        "@type": "Brand",
+        "name": "Hot Wheels"
+      },
+      "offers": {
+        "@type": "AggregateOffer",
+        "priceCurrency": "IDR",
+        "lowPrice": "{{ $range['min'] }}",
+        "highPrice": "{{ $range['max'] }}",
+        "offerCount": "{{ $signal ? max(1, $signal->active_listing_count) : 1 }}"
+      }
+    }
+    </script>
 @endpush

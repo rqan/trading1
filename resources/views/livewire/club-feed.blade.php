@@ -102,7 +102,11 @@
                         {{-- Cover photo --}}
                         @if ($journal->coverPhoto())
                             <img src="{{ $journal->coverPhoto()->url }}"
-                                 alt="Foto jurnal"
+                                 alt="Foto jurnal {{ $journal->title }}"
+                                 loading="lazy"
+                                 decoding="async"
+                                 width="800"
+                                 height="192"
                                  class="mt-3 w-full h-48 object-cover">
                         @endif
 

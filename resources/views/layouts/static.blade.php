@@ -3,6 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- SEO: Google Search Console Verification -->
+    <meta name="google-site-verification" content="YOUR_GOOGLE_SITE_VERIFICATION_CODE" />
+
     <title>{{ $title ?? 'DCastTrade' }}</title>
     <meta name="description" content="{{ $description ?? 'Platform pertukaran diecast / Hot Wheels terpercaya.' }}">
     <link rel="canonical" href="{{ url()->current() }}">
@@ -17,6 +21,32 @@
         body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     </style>
     @vite(['resources/css/app.css'])
+
+    {{-- SEO: JSON-LD Schema --}}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "{{ url('/') }}#website",
+          "url": "{{ url('/') }}",
+          "name": "DCastTrade",
+          "description": "Platform komunitas dan pertukaran diecast / Hot Wheels terpercaya di Indonesia.",
+          "publisher": {
+            "@id": "{{ url('/') }}#organization"
+          }
+        },
+        {
+          "@type": "Organization",
+          "@id": "{{ url('/') }}#organization",
+          "name": "DCastTrade",
+          "url": "{{ url('/') }}",
+          "logo": "{{ asset('logo.png') }}"
+        }
+      ]
+    }
+    </script>
 </head>
 <body class="bg-slate-50 text-slate-900">
 

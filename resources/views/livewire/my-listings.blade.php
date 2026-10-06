@@ -61,9 +61,9 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach($listings as $listing)
                     @php
-                        $casting = $listing->type === 'for_trade' && $listing->collectionItem
-                            ? $listing->collectionItem->casting
-                            : $listing->casting;
+                        $isTrade = $listing->offeredItems->isNotEmpty();
+                        $primaryItem = $isTrade ? $listing->offeredItems->first() : $listing->requestedItems->first();
+                        $casting = $primaryItem?->casting;
 
                         $statusConfig = match($listing->status) {
                             'active'    => ['label' => '🟢 Aktif',    'color' => 'bg-green-100 text-green-800'],
@@ -73,10 +73,9 @@
                             default     => ['label' => $listing->status, 'color' => 'bg-gray-100 text-gray-500'],
                         };
 
-                        $typeConfig = match($listing->type) {
-                            'for_trade'   => ['label' => 'For Trade',   'color' => 'bg-green-50 text-green-700 border-green-200'],
-                            'looking_for' => ['label' => 'Looking For', 'color' => 'bg-blue-50 text-blue-700 border-blue-200'],
-                            default       => ['label' => $listing->type, 'color' => 'bg-gray-50 text-gray-600 border-gray-200'],
+                        $typeConfig = match($isTrade) {
+                            true  => ['label' => 'For Trade',   'color' => 'bg-green-50 text-green-700 border-green-200'],
+                            false => ['label' => 'Looking For', 'color' => 'bg-blue-50 text-blue-700 border-blue-200'],
                         };
                     @endphp
 
@@ -84,7 +83,7 @@
                         {{-- Card Header --}}
                         <div class="p-4 border-b border-gray-100 flex items-start justify-between gap-2">
                             <div>
-                                <h3 class="font-bold text-gray-800">{{ $casting?->name ?? 'Unknown' }}</h3>
+                                <h3 class="font-bold text-gray-800">{{ $casting?->name ?? $listing->title ?? 'Unknown' }}</h3>
                                 <p class="text-xs text-gray-500 mt-0.5">{{ $casting?->year ?? '' }} · {{ $casting?->series ?? '' }}</p>
                             </div>
                             <span class="inline-flex items-center shrink-0 px-2.5 py-0.5 rounded-full text-xs font-medium border {{ $typeConfig['color'] }}">
@@ -94,15 +93,17 @@
 
                         {{-- Card Body --}}
                         <div class="p-4 flex-1 space-y-2 text-sm">
-                            @if($listing->type === 'for_trade' && $listing->collectionItem)
+                            @if($isTrade && $primaryItem)
                                 <div class="flex justify-between text-gray-600">
                                     <span>Kondisi</span>
-                                    <span class="font-medium">{{ $listing->collectionItem->condition }}</span>
+                                    <span class="font-medium">{{ $primaryItem->condition ?? 'Unknown' }}</span>
                                 </div>
+                                @if($primaryItem->condition_notes)
                                 <div class="flex justify-between text-gray-600">
-                                    <span>Kartu</span>
-                                    <span class="font-medium">{{ $listing->collectionItem->card_condition ?? '—' }}</span>
+                                    <span>Notes</span>
+                                    <span class="font-medium">{{ $primaryItem->condition_notes }}</span>
                                 </div>
+                                @endif
                             @endif
 
                             @if($listing->notes)

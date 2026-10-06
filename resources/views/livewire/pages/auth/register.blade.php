@@ -26,16 +26,15 @@ new #[Layout('layouts.guest')] class extends Component
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
-        ];
-
-        if (config('wflf.beta.require_invite', true)) {
-            $rules['invite_code'] = ['required', 'string', function ($attribute, $value, $fail) {
-                $code = InviteCode::where('code', $value)->whereNull('used_at')->first();
-                if (!$code) {
-                    $fail('The invite code is invalid or has already been used.');
+            'invite_code' => ['nullable', 'string', function ($attribute, $value, $fail) {
+                if (!empty($value)) {
+                    $code = InviteCode::where('code', $value)->whereNull('used_at')->first();
+                    if (!$code) {
+                        $fail('The invite code is invalid or has already been used.');
+                    }
                 }
-            }];
-        }
+            }],
+        ];
 
         $validated = $this->validate($rules);
 
@@ -44,7 +43,7 @@ new #[Layout('layouts.guest')] class extends Component
 
         $user = User::create($validated);
 
-        if (config('wflf.beta.require_invite', true)) {
+        if (!empty($this->invite_code)) {
             $code = InviteCode::where('code', $this->invite_code)->first();
             if ($code) {
                 $code->update([
@@ -97,16 +96,14 @@ new #[Layout('layouts.guest')] class extends Component
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
-        @if(config('wflf.beta.require_invite', true))
-        <!-- Invite Code -->
+        <!-- Invite Code (Optional) -->
         <div class="mt-4">
-            <x-input-label for="invite_code" :value="__('Closed Beta Invite Code')" />
+            <x-input-label for="invite_code" :value="__('Closed Beta Invite Code (Optional)')" />
             <x-text-input wire:model="invite_code" id="invite_code" class="block mt-1 w-full"
                             type="text"
-                            name="invite_code" required />
+                            name="invite_code" />
             <x-input-error :messages="$errors->get('invite_code')" class="mt-2" />
         </div>
-        @endif
 
         <div class="flex items-center justify-end mt-4">
             <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}" wire:navigate>

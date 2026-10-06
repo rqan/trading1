@@ -1,2 +1,12 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin
+Disallow: /profile
+Disallow: /dashboard
+Disallow: /my-trades
+Disallow: /my-listings
+Disallow: /notifications
+Disallow: /journals
+Disallow: /trades
+
+Sitemap: https://domainmu.com/sitemap.xml

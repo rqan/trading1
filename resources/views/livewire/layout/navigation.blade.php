@@ -36,7 +36,7 @@ new class extends Component
                     <x-nav-link :href="route('listings')" :active="request()->routeIs('listings')" wire:navigate>
                         {{ __('Listings') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('community.feed')" :active="request()->routeIs('community.feed')" wire:navigate>
+                    <x-nav-link :href="route('club.feed')" :active="request()->routeIs('club.feed')" wire:navigate>
                         {{ __('Community') }}
                     </x-nav-link>
                 </div>
@@ -93,7 +93,7 @@ new class extends Component
             <x-responsive-nav-link :href="route('listings')" :active="request()->routeIs('listings')" wire:navigate>
                 {{ __('Listings') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('community.feed')" :active="request()->routeIs('community.feed')" wire:navigate>
+            <x-responsive-nav-link :href="route('club.feed')" :active="request()->routeIs('club.feed')" wire:navigate>
                 {{ __('Community') }}
             </x-responsive-nav-link>
         </div>
